@@ -105,8 +105,8 @@ def find_naybers(test_row, train_data, k_nay):
   
     # check if stuff in 'test_row' is the same as 'train_row'
     if ( test_row[0] == train_row[0] ):
-      print(f"*itself - itself")
-      print(f"*skipped test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]} \n")    
+      # print(f"*itself - itself")
+      # print(f"*skipped test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]} \n")    
       pass
 
     else:
@@ -116,9 +116,9 @@ def find_naybers(test_row, train_data, k_nay):
       distance_list.append( (man_distance, train_row[1]) )
     
 
-  print( distance_list )
+  # print( distance_list )
   distance_list.sort( key=lambda asdf: asdf[0] ) # asdf[0] is just the 'first item (man distance)' in the 'distance_list'
-  print( distance_list )
+  # print( distance_list )
 
   naybers = []
   for i in range(k_nay):
@@ -133,7 +133,7 @@ def calculate_manhat_distance(test_row, train_row):
   # print(f"test_row: {test_row}  train_row: {train_row}")  
   # print(f"test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]}")  
   if (  len(test_row[0]) == len(train_row[0])   ):
-    print(f"test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]}")  
+    # print(f"test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]}")  
       
     for a, b in zip( test_row[0], train_row[0]  ):
     # print('calculate_manhat_distance a: ', a)
@@ -212,66 +212,100 @@ def k_eval(test_set, train_set, actual):
   return k_evaluation
 
 ## this block of code below is for running 
-## train_set.csv, validation_set.csv
+## train_set.csv
 ## loading data
 ## why? to pick the value of 'k'
 
 # getting file
-filename_train_set_simple = '/content/drive/MyDrive/homework1 spring 2021/data/train_set_simple.csv'
-print(f"filename: {filename_train_set_simple}")
+filename_train_set = '/content/drive/MyDrive/homework1 spring 2021/data/train_set.csv'
+print(f"filename: {filename_train_set}")
 
 # load csv file into a variable
-train_set_simple = load_csv(filename_train_set_simple)
-print(f"current train_set: {train_set_simple}")
+train_set = load_csv(filename_train_set)
+# print(f"current train_set: {train_set}")
 
-# creating 'dict/ionary' from train_set.csv
-train_set_dic = convert_to_dic(train_set_simple)
+# creating 'dictionary' from train_set.csv
+train_set_dic = convert_to_dic(train_set)
 # print(f"train_set_dic.items() {train_set_dic.items()} "  )
 # print(f"len( train_set_dic.items() ) {len( train_set_dic.items() )}")
 
 # convert sentences into vectors
-train_set_simple_vec = convert_sentences_to_vector(train_set_dic, train_set_simple)
-# len( train_set_simple_vec[0][0] ) # >> should be 
-# train_set_simple_vec[0][0] # >> should be the 'emotions'
-# train_set_simple_vec[0][1] # >> should be the 'emotions'
+train_set_vec = convert_sentences_to_vector(train_set_dic, train_set)
+# print(f"len( train_set_vec[0][0] ) { len( train_set_vec[0][0] ) }")  # >> should be same as len( train_set_dic.items() )
+# train_set_vec[0][1] # >> should be the 'emotions'
+# display( train_set_vec[0][1] ) # >> should be the 'emotions'
 
-actual_emotions = np.array(train_set_simple)[ : , -1] # >> use np.array() to get the 'emotions' from each sentence
+actual_emotions = np.array(train_set)[ : , -1] # >> use np.array() to get the 'emotions' from each sentence
 # len( actual_emotions )
 # print(f"actual_emotions {actual_emotions}")
-
-## debugging block
-## skipping calcualtion on the same row
-# how to check if content inside 'list' are the same
-
-## debug code
-train_set111 = [ 
-             [[ 1, 1, 1, 1, 1], 'happy'], 
-              [[1, 0, 0, 1, 0], 'happy'],
-              [[0, 0, 0, 1, 0], 'sad'],
-             [[1, 1, 0, 1, 1], 'happy'] 
-             ]
-
-# train_set[1][0] == train_set[2][0]
-
-for idx, row in enumerate(train_set111):
-  
-  test_row = row
-  print(f"test_row {test_row}")
-  # print(f"row index: {idx}")
-  
-
-  prediction = predict_answer(test_row, train_set111, 3)
-  print(f"prediction: {prediction} \n")
 
 ## this block of code below is for running train_set.csv, validation_set.csv
 ## why? to pick the value of 'k'
 
-train_set = train_set_simple_vec
-actual = np.array(train_set)[ : , -1]
-print(f"actual {actual}")
+train_set = train_set_vec
+actual = actual_emotions
 
-# k_list = [3, 5, 7, 9, 11, 13, 15,17 ]
-k_list = [3,5,7]
+
+# k_list is to 23 because square.root(598) is what? 24 something, thus we make it 23
+k_list = [3, 5, 7, 9, 11, 13, 15,17,19,21,23 ]
+
+
+for k in k_list:
+  preds3 = []
+
+  print(f"\nlen train_set: { len(train_set) } ")
+  print(f"len actual: { len(actual) } \n")
+  start = timeit.default_timer() # start program timer
+
+  for idx, row in enumerate(train_set): 
+    test_row = row
+    the_prediction = predict_answer(test_row, train_set, k)
+    preds3.append( the_prediction )
+
+  cur_accuracy = accuracy_met(actual, preds3)
+  stop = timeit.default_timer() # stop program timer
+
+  print(f"when K is {k}, accuracy %: {cur_accuracy}")
+  print(f"program run time (seconds):  {stop - start} ")
+
+## this block of code below is for running 
+## validation_set.csv
+## loading data
+## why? to pick the value of 'k'
+
+# getting file
+filename_validation_set = '/content/drive/MyDrive/homework1 spring 2021/data/validation_set.csv'
+print(f"filename: {filename_validation_set}")
+
+# load csv file into a variable
+validation_set = load_csv(filename_validation_set)
+# print(f"current validation_set: {validation_set}")
+
+# creating 'dictionary' from validation_set.csv
+validation_set_dic = convert_to_dic(validation_set)
+# print(f"validation_set_dic.items() {validation_set_dic.items()} "  )
+# print(f"len( validation_set_dic.items() ) {len( validation_set_dic.items() )}")
+
+# convert sentences into vectors
+validation_set_vec = convert_sentences_to_vector(validation_set_dic, validation_set)
+# print(f"len( validation_set_vec[0][0] ) { len( validation_set_vec[0][0] ) }")  # >> should be same as len( validation_set_vec.items() )
+# validation_set_vec[0][1] # >> should be the 'emotions'
+# display( validation_set_vec[0][1] ) # >> should be the 'emotions'
+
+actual_emotions_validation = np.array(validation_set)[ : , -1] # >> use np.array() to get the 'emotions' from each sentence
+# len( actual_emotions_validation )
+# print(f"actual_emotions_validation {actual_emotions_validation}")
+
+## this block of code below is for running train_set.csv, validation_set.csv
+## why? to pick the value of 'k'
+
+train_set = validation_set_vec
+actual = actual_emotions_validation
+
+
+# k_list is to 23 because square.root(311) is what? 17 something
+k_list = [3, 5, 7, 9, 11, 13, 15,17 ]
+
 
 for k in k_list:
   preds3 = []
@@ -293,50 +327,52 @@ for k in k_list:
 
 ## this block of code is for test_set.csv
 ## loading all the csv files
-## final step, predicting answers
+## FINAL STEP, predicting answers
 
-
-file_name_train_set = '/content/drive/MyDrive/homework1 spring 2021/data/train_set.csv'
-# file_name = '/content/drive/MyDrive/homework1 spring 2021/data/validation_set.csv'
-file_test_set_no_textid = '/content/drive/MyDrive/homework1 spring 2021/data/test_set_no_textid.csv'
-file_name_for_making_dic = '/content/drive/MyDrive/homework1 spring 2021/data/train_vali_test_for_dic.csv'
-
-dataset_to_make_dic = load_csv(file_name_for_making_dic)
-# print(f"dataset1 {dataset1}")
+file_name_for_making_dic_final = '/content/drive/MyDrive/homework1 spring 2021/data/train_vali_test_for_dic.csv'
+dataset_to_make_dic_final = load_csv(file_name_for_making_dic_final)
 
 # create 'dictionary' of words here
-dic1 = convert_to_dic(dataset_to_make_dic)
+dic_final = convert_to_dic(dataset_to_make_dic_final)
 
-print(f"file_name: {file_name_for_making_dic}")
-print(f"dic1.items() {dic1.items()} "  )
-print(f"len( dic1.items() ) {len( dic1.items() )}")
+print(f"file_name: {file_name_for_making_dic_final}")
+print(f"dic_final.items() {dic_final.items()} "  )
+print(f"len( dic_final.items() ) {len( dic_final.items() )}")
 
 ## this block of code is for test_set.csv
 ## loading all the csv files
-## final step, predicting answers
+## FINAL STEP, predicting answers
 
 
 # open train_set.csv file
-train_set_file = load_csv(file_name_train_set)
-# display(train_set_file)
+file_name_train_set_final = '/content/drive/MyDrive/homework1 spring 2021/data/train_set.csv'
+train_set_final = load_csv(file_name_train_set_final)
+# display(train_set_final)
 
 # convert train_set.csv to vector, using dic1
-train_set = convert_sentences_to_vector(dic1, train_set_file)
-# len( train_set[0][0] ) >> should be 3,275
-# train_set[0][1] >> should be the 'emotions'
+train_set_vec_final = convert_sentences_to_vector(dic_final, train_set_final)
+# display( len( train_set_vec_final[0][0] ) ) # >> should be 3,275
+# display( train_set_vec_final[0][1] ) # >> should be the 'emotions'
+
 
 # open test_set.csv file
-test_set_file = load_csv(file_test_set_no_textid)
-# display(test_set_file)
+file_test_set_no_textid = '/content/drive/MyDrive/homework1 spring 2021/data/test_set_no_textid.csv'
+test_set_file_final = load_csv(file_test_set_no_textid)
+# display(test_set_file_final)
 
 # convert test_set.csv to vector, using dic1
-test_set = convert_sentences_to_vector(dic1, test_set_file)
-# len( test_set[0][0] ) # >> should be 3,275
-# test_set[0][1] # >>  should be the '' nothing
+test_set_vec_final = convert_sentences_to_vector(dic_final, test_set_file_final)
+# len( test_set_vec_final[0][0] ) # >> should be 3,275
+# test_set_vec_final[0][1] # >>  should be the '' nothing
 
 ## this block of code is for test_set.csv
-## the 'k' value will be 3
-k_best = 3
+## the 'k' value will be 15, why? by looking at the higest accuracy calculated with train_set.csv
+## of 40% at k = 15
+
+k_best = 17
+
+train_set = train_set_vec_final
+test_set = test_set_vec_final
 
 print(f"len train_set: { len(train_set) } ")
 print(f"len test_set: { len(test_set) } \n")
@@ -346,12 +382,14 @@ pred_final = []
 start = timeit.default_timer() # start program timer
 
 
-for idx, test_row in enumerate(test_set):
+for idx, row in enumerate(test_set):
+  test_row = row
   the_prediction = predict_answer(test_row, train_set, k_best)
-  pred_final.append( [the_prediction, idx] )  
+  pred_final.append( [the_prediction, idx+1] )  
 
 
 stop = timeit.default_timer() # stop program timer
+print(f"value of K: {k_best}")
 print(f"pred_final {pred_final}\n")
 print(f"program run time (seconds):  {stop - start} ")
 
@@ -359,10 +397,10 @@ print(f"program run time (seconds):  {stop - start} ")
 ## writing the pred_final 'list' 
 ## into a csv file
 
-dat1 = [ [ [1,2,3], 'yes'], [[4,5,6],'no'] ]
+# dat1 = [ [ [1,2,3], 'yes'], [[4,5,6],'no'] ]
 
 # open a csv file in 'w' mode
-with open('111.csv', 'w', newline='') as file:
+with open('predic11.csv', 'w', newline='') as file:
   write1 = csv.writer(file)
   write1.writerow( ['emotions', 'txtid'] )
 
@@ -413,3 +451,27 @@ print(f"number of K, accuracy: {k_eval1}")
 # predict1 = predict_answer(test_row, train_dataset, 3)
 # actual = ['happy', 'happy', 'sad']
 # predicted = ['sad', 'happy', 'sad']
+
+## debugging block
+## skipping calcualtion on the same row
+# how to check if content inside 'list' are the same
+
+## debug code
+train_set111 = [ 
+             [[ 1, 1, 1, 1, 1], 'happy'], 
+              [[1, 0, 0, 1, 0], 'happy'],
+              [[0, 0, 0, 1, 0], 'sad'],
+             [[1, 1, 0, 1, 1], 'happy'] 
+             ]
+
+# train_set[1][0] == train_set[2][0]
+
+for idx, row in enumerate(train_set111):
+  
+  test_row = row
+  print(f"test_row {test_row}")
+  # print(f"row index: {idx}")
+  
+
+  prediction = predict_answer(test_row, train_set111, 3)
+  print(f"prediction: {prediction} \n")

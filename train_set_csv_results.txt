@@ -1,0 +1,66 @@
+
+len train_set: 598 
+len actual: 598 
+
+when K is 3, accuracy %: 29.264214046822744
+program run time (seconds):  75.77832783299982 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 5, accuracy %: 34.280936454849495
+program run time (seconds):  75.68391604399994 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 7, accuracy %: 34.280936454849495
+program run time (seconds):  75.72831036799971 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 9, accuracy %: 35.45150501672241
+program run time (seconds):  75.67559717199993 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 11, accuracy %: 36.2876254180602
+program run time (seconds):  75.58794077699986 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 13, accuracy %: 38.96321070234114
+program run time (seconds):  75.73321473000033 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 15, accuracy %: 40.13377926421405
+program run time (seconds):  75.53877801199997 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 17, accuracy %: 39.130434782608695
+program run time (seconds):  75.67505334599991 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 19, accuracy %: 38.12709030100335
+program run time (seconds):  75.52603271399994 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 21, accuracy %: 37.95986622073579
+program run time (seconds):  75.57600062399979 
+
+len train_set: 598 
+len actual: 598 
+
+when K is 23, accuracy %: 38.62876254180602
+program run time (seconds):  75.45521952199988 
