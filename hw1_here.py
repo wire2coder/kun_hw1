@@ -99,17 +99,26 @@ def predict_answer( test_row, train_dataset, k_nay ):
 
 def find_naybers(test_row, train_data, k_nay):
   distance_list = []
+  man_distance = 0.0
 
   for train_row in train_data:
-    # eu_distance = calculate_eu_distance(test_row, train_row)
-    man_distance = calculate_manhat_distance(test_row, train_row)
-    # print(f"train_row: {train_row}")
-    # print(f"train_row[1]: {train_row[1]}")
-    distance_list.append( (man_distance, train_row[1]) )
+  
+    # check if stuff in 'test_row' is the same as 'train_row'
+    if ( test_row[0] == train_row[0] ):
+      print(f"*itself - itself")
+      print(f"*skipped test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]} \n")    
+      pass
 
-  # print( distance_list )
+    else:
+      man_distance = calculate_manhat_distance(test_row, train_row)
+      # print(f"train_row: {train_row}")
+      # print(f"train_row[1]: {train_row[1]}")
+      distance_list.append( (man_distance, train_row[1]) )
+    
+
+  print( distance_list )
   distance_list.sort( key=lambda asdf: asdf[0] ) # asdf[0] is just the 'first item (man distance)' in the 'distance_list'
-  # print( distance_list )
+  print( distance_list )
 
   naybers = []
   for i in range(k_nay):
@@ -122,35 +131,30 @@ def calculate_manhat_distance(test_row, train_row):
   distance = 0.0
 
   # print(f"test_row: {test_row}  train_row: {train_row}")  
-  print(f"test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]}")  
-  if ( len(test_row[0]) == len(train_row[0]) ):
-
-    if (test_row[0] != train_row[0] ):
-
-      for a, b in zip( test_row[0], train_row[0]  ):
-        # print('calculate_manhat_distance a: ', a)
-        # print('calculate_manhat_distance b: ', b)
-
-        distance = distance + abs(a-b)
-    else:
-      print(f"\n *itself - itself")
-      print(f"*skipped test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]} \n")  
-
+  # print(f"test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]}")  
+  if (  len(test_row[0]) == len(train_row[0])   ):
+    print(f"test_row[0]: {test_row[0]}  train_row[0]: {train_row[0]}")  
+      
+    for a, b in zip( test_row[0], train_row[0]  ):
+    # print('calculate_manhat_distance a: ', a)
+    # print('calculate_manhat_distance b: ', b)
+      distance = distance + abs(a-b)      
+    
   else:
     print('ERROR, vector length do not match')
     
   return distance
 
 
-v1 = [[2,3],'yes']
-v2 = [[5,7],'no']
+# v1 = [[2,3],'yes']
+# v2 = [[5,7],'no']
 # v2 = [[5,8],'no'] # uncommit for error checking
 
-dis1 = calculate_manhat_distance(v1, v2)
+# dis1 = calculate_manhat_distance(v1, v2)
 # print(f"checking v1 - v2 should be 7, got : {dis1}")
 
 #if condition returns False, AssertionError is raised:
-assert dis1 == 7, "v1 - v2 should be 7"
+# assert dis1 == 7, "v1 - v2 should be 7"
 
 
 
@@ -235,12 +239,13 @@ actual_emotions = np.array(train_set_simple)[ : , -1] # >> use np.array() to get
 # len( actual_emotions )
 # print(f"actual_emotions {actual_emotions}")
 
-## debugging block, here 2/18
+## debugging block
+## skipping calcualtion on the same row
 # how to check if content inside 'list' are the same
 
 ## debug code
-train_set = [ 
-             [[1, 1, 1, 1, 1], 'happy'], 
+train_set111 = [ 
+             [[ 1, 1, 1, 1, 1], 'happy'], 
               [[1, 0, 0, 1, 0], 'happy'],
               [[0, 0, 0, 1, 0], 'sad'],
              [[1, 1, 0, 1, 1], 'happy'] 
@@ -248,30 +253,25 @@ train_set = [
 
 # train_set[1][0] == train_set[2][0]
 
-for idx, row in enumerate(train_set):
+for idx, row in enumerate(train_set111):
   
   test_row = row
   print(f"test_row {test_row}")
   # print(f"row index: {idx}")
   
 
-  prediction = predict_answer(test_row, train_set, 3)
+  prediction = predict_answer(test_row, train_set111, 3)
   print(f"prediction: {prediction} \n")
 
 ## this block of code below is for running train_set.csv, validation_set.csv
 ## why? to pick the value of 'k'
 
-
-## debug code
-train_set = [ [[1, 1, 1, 1, 1], 'happy'], 
-              [[1, 0, 0, 1, 0], 'happy'],
-              [[0, 0, 0, 1, 0], 'sad'] ]
-
+train_set = train_set_simple_vec
 actual = np.array(train_set)[ : , -1]
 print(f"actual {actual}")
 
 # k_list = [3, 5, 7, 9, 11, 13, 15,17 ]
-k_list = [3]
+k_list = [3,5,7]
 
 for k in k_list:
   preds3 = []
@@ -280,7 +280,7 @@ for k in k_list:
   print(f"len actual: { len(actual) } \n")
   start = timeit.default_timer() # start program timer
 
-  for idx, row in enumerate(train_set): # how to check if content inside 'list' are the same
+  for idx, row in enumerate(train_set): 
     test_row = row
     the_prediction = predict_answer(test_row, train_set, k)
     preds3.append( the_prediction )
